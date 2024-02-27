@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import logo from "@/logo.png";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ function page() {
     null
   );
 
-  const nameRef = React.useRef<HTMLInputElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState<string>("");
   const [picture, setPicture] = useState<string | ArrayBuffer | null>("");
 
