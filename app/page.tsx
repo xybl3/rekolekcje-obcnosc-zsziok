@@ -1,113 +1,163 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import logo from "@/logo.png";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import ClassSelection from "@/components/ClassSelection";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { LocateIcon, RocketIcon } from "lucide-react";
+import { addImage, addPresenceRecord } from "@/lib/appwriteClient";
+import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
+import CameraComponent from "@/components/CameraComponent";
 
-export default function Home() {
+function page() {
+  const [userLocation, setUserLocation] = useState<GeolocationPosition | null>(
+    null
+  );
+
+  const nameRef = React.useRef<HTMLInputElement>(null);
+  const [name, setName] = useState<string>("");
+  const [picture, setPicture] = useState<string | ArrayBuffer | null>("");
+
+  const [selectedClass, setSelectedClass] = useState(
+    localStorage.getItem("class") || ""
+  );
+
+  const [dataSentLoadingStatus, setDataSentLoadingStatus] = useState<
+    "not-sent" | "loading" | "sent" | "error"
+  >("not-sent");
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value); // Update the name state with input value
+  };
+
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      // Get the user's location
+      // check if the user has allowed to share their location
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation(position);
+        },
+        (error) => {
+          alert(error.message);
+        }
+      );
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+    }
+  };
+
+  useEffect(() => {
+    setName(localStorage.getItem("name") || "");
+    getUserLocation();
+  }, [typeof window !== "undefined"]);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
+    <>
+      <AlertDialog open={dataSentLoadingStatus === "loading"}>
+        <AlertDialogContent>
+          <RocketIcon className="h-8 w-8 animate-spin" />
+          <p className="mt-4">Wysyłanie danych...</p>
+        </AlertDialogContent>
+      </AlertDialog>
+      <div className="flex flex-col min-h-[100vh] justify-center items-center">
+        <div
+          className="w-[96%] lg:w-2/5 h-full
+         lg:h-[80vh] flex flex-col bg-slate-900 rounded-xl"
+        >
+          <div className="flex flex-col items-center justify-center p-3">
             <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+              src={logo}
+              className="h-[128px] w-[128px] rounded mb-12 mt-12"
+              alt="logo"
             />
-          </a>
+            <h1 className="text-3xl font-bold">Rekolekcje 2024</h1>
+            <h2 className="text-xl opacity-80">Weryfikacja obecności</h2>
+
+            <p className="opacity-50 text-center">
+              Podaj swoje imię i nazwisko oraz wstaw zdjęcie, a następnie
+              kliknij przycisk "Zatwierdź"
+            </p>
+            {!userLocation && (
+              <Alert variant={"destructive"} className="mt-3">
+                <LocateIcon className="h-4 w-4" />
+                <AlertTitle>Poczekaj</AlertTitle>
+                <AlertDescription>
+                  Lokalizacja jest pobierana...
+                </AlertDescription>
+              </Alert>
+            )}
+            {dataSentLoadingStatus === "sent" && (
+              <Alert variant={"default"} className="mt-3">
+                <RocketIcon className="h-4 w-4" />
+                <AlertTitle>Sukces</AlertTitle>
+                <AlertDescription>
+                  Dane zostały wysłane pomyślnie
+                </AlertDescription>
+              </Alert>
+            )}
+            {dataSentLoadingStatus !== "sent" && (
+              <div className="flex flex-col mt-3 w-full lg:w-2/5 justify-center sm:gap-3">
+                <Input
+                  placeholder="Imię i nazwisko"
+                  ref={nameRef}
+                  value={name}
+                  onChange={handleNameChange}
+                />
+                <ClassSelection
+                  defaultValue={selectedClass}
+                  onSelect={(val) => {
+                    setSelectedClass(val);
+                    localStorage.setItem("class", val);
+                  }}
+                />
+                <div className="mt-3">
+                  <CameraComponent
+                    setData={(data) => {
+                      // console.log(data);
+                      setPicture(data);
+                    }}
+                  />
+                </div>
+
+                <button
+                  className="bg-blue-600 transition-all duration-300 text-white px-4 py-2 rounded-lg mt-4 disabled:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-55 w-full"
+                  disabled={!userLocation || !name || !selectedClass}
+                  onClick={() => {
+                    setDataSentLoadingStatus("loading");
+                    localStorage.setItem("name", name);
+                    addImage(
+                      picture as ArrayBuffer,
+                      name.split(" ")[0] + selectedClass
+                    );
+                    addPresenceRecord({
+                      name,
+                      surname: "",
+                      class: selectedClass,
+                      time: new Date(),
+                      isInChurch: true,
+                      latitude: userLocation?.coords.latitude || 0,
+                      longitude: userLocation?.coords.longitude || 0,
+                    })
+                      .then(() => {
+                        setDataSentLoadingStatus("sent");
+                      })
+                      .catch((e) => {
+                        console.error(e);
+                        setDataSentLoadingStatus("error");
+                      });
+                  }}
+                >
+                  Zatwierdź
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </>
   );
 }
+
+export default page;
