@@ -10,7 +10,7 @@ import { addImage, addPresenceRecord } from "@/lib/appwriteClient";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
 import CameraComponent from "@/components/CameraComponent";
 
-function Home() {
+export default function Home() {
   const [userLocation, setUserLocation] = useState<GeolocationPosition | null>(
     null
   );
@@ -159,5 +159,3 @@ function Home() {
     </>
   );
 }
-
-export default Home;
