@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import ClassSelection from "@/components/ClassSelection";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LocateIcon, RocketIcon } from "lucide-react";
-import { addImage, addPresenceRecord } from "@/lib/appwriteClient";
+import axios from "axios";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
 import CameraComponent from "@/components/CameraComponent";
+import { UserPresenceRecord } from "@/lib/appwriteClient";
 
 export default function Home() {
   const [userLocation, setUserLocation] = useState<GeolocationPosition | null>(
@@ -17,7 +18,8 @@ export default function Home() {
 
   const nameRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState<string>("");
-  const [picture, setPicture] = useState<string | ArrayBuffer | null>("");
+  // const [picture, setPicture] = useState<string | ArrayBuffer | null>("");
+  const [uniqueCode, setUniqueCode] = useState<string | undefined>("");
 
   const [selectedClass, setSelectedClass] = useState("");
 
@@ -29,6 +31,9 @@ export default function Home() {
     setName(event.target.value); // Update the name state with input value
   };
 
+  const handleUnuqueCode = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUniqueCode(event.target.value);
+  };
   const getUserLocation = () => {
     if (navigator.geolocation) {
       // Get the user's location
@@ -38,7 +43,11 @@ export default function Home() {
           setUserLocation(position);
         },
         (error) => {
-          alert(error.message);
+          if (error.PERMISSION_DENIED) {
+            alert(
+              "Dostęp do lokalizaji jest wymagany do zweryfikowania obecności"
+            );
+          }
         }
       );
     } else {
@@ -111,41 +120,55 @@ export default function Home() {
                     localStorage.setItem("class", val);
                   }}
                 />
+                <Input
+                  placeholder="Unikalny kod"
+                  // ref={nameRef}
+                  value={uniqueCode}
+                  onChange={handleUnuqueCode}
+                />
                 <div className="mt-3">
-                  <CameraComponent
+                  {/* <CameraComponent
                     setData={(data) => {
                       // console.log(data);
                       setPicture(data);
                     }}
-                  />
+                  /> */}
                 </div>
 
                 <button
                   className="bg-blue-600 transition-all duration-300 text-white px-4 py-2 rounded-lg mt-4 disabled:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-55 w-full"
                   disabled={!userLocation || !name || !selectedClass}
-                  onClick={() => {
+                  onClick={async () => {
                     setDataSentLoadingStatus("loading");
                     localStorage.setItem("name", name);
-                    addImage(
-                      picture as ArrayBuffer,
-                      name.split(" ")[0] + selectedClass
-                    );
-                    addPresenceRecord({
-                      name,
-                      surname: "",
-                      class: selectedClass,
-                      time: new Date(),
-                      isInChurch: true,
-                      latitude: userLocation?.coords.latitude || 0,
-                      longitude: userLocation?.coords.longitude || 0,
-                    })
-                      .then(() => {
-                        setDataSentLoadingStatus("sent");
-                      })
-                      .catch((e) => {
-                        console.error(e);
-                        setDataSentLoadingStatus("error");
-                      });
+
+                    try {
+                      await axios.post("/api/presence", {
+                        name: name.split(" ")[0],
+                        surname: name.split(" ")[1],
+                        class: selectedClass,
+                        latitude: userLocation?.coords.latitude || 0,
+                        longitude: userLocation?.coords.longitude || 0,
+                      } as UserPresenceRecord);
+                      setDataSentLoadingStatus("sent");
+                    } catch (e) {}
+
+                    // addPresenceRecord({
+                    //   name,
+                    //   surname: "",
+                    //   class: selectedClass,
+                    //   time: new Date(),
+                    //   isInChurch: true,
+                    //   latitude: userLocation?.coords.latitude || 0,
+                    //   longitude: userLocation?.coords.longitude || 0,
+                    // })
+                    //   .then(() => {
+                    //     setDataSentLoadingStatus("sent");
+                    //   })
+                    //   .catch((e) => {
+                    //     console.error(e);
+                    //     setDataSentLoadingStatus("error");
+                    //   });
                   }}
                 >
                   Zatwierdź

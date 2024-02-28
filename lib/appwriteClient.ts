@@ -1,19 +1,22 @@
-import { Account, Client, Databases, Storage, ID } from "appwrite";
+import { Client, Databases, Storage, ID } from "appwrite";
 
 const client = new Client();
 
-client
-  .setEndpoint("https://cloud.appwrite.io/v1")
-  .setProject("65d798b721c99fdba8b9");
+// client
+//   .setEndpoint("https://cloud.appwrite.io/v1")
+//   .setProject("65d798b721c99fdba8b9");
 
-const account = new Account(client);
+client
+  .setEndpoint("http://34.32.26.18:8789/v1")
+  .setProject("65df8be2425366d45e4b");
+
 const storage = new Storage(client);
-let dbId = "65d79bbf7fca044c9b3b";
+let dbId = "65df8c18771056640296";
 let collectionId = "65d79bcb2aaaf3e857ac";
 let bucketId = "65d8796f71f818093583";
 let database = new Databases(client);
 
-interface UserPresenceRecord {
+export interface UserPresenceRecord {
   name: string;
   surname: string;
   class: string;
@@ -33,7 +36,7 @@ async function addImage(buffer: ArrayBuffer, name: string) {
   );
 }
 
-export { client, account, addPresenceRecord, addImage };
+export { client, addPresenceRecord, addImage, database };
 
 async function base64toFile(
   base64Data: any,
