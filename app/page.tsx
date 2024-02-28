@@ -19,9 +19,7 @@ export default function Home() {
   const [name, setName] = useState<string>("");
   const [picture, setPicture] = useState<string | ArrayBuffer | null>("");
 
-  const [selectedClass, setSelectedClass] = useState(
-    localStorage.getItem("class") || ""
-  );
+  const [selectedClass, setSelectedClass] = useState("");
 
   const [dataSentLoadingStatus, setDataSentLoadingStatus] = useState<
     "not-sent" | "loading" | "sent" | "error"
@@ -50,6 +48,7 @@ export default function Home() {
 
   useEffect(() => {
     setName(localStorage.getItem("name") || "");
+    setSelectedClass(localStorage.getItem("class") || "");
     getUserLocation();
   }, [typeof window !== "undefined"]);
 
