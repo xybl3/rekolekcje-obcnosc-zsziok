@@ -1,3 +1,5 @@
+import { query } from "@/lib/db";
+
 export async function GET(request: Request) {
   // from get Request
   const url = new URL(request.url);

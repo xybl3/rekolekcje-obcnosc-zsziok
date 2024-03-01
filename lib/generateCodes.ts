@@ -1,4 +1,4 @@
-import { database } from "./appwriteClient";
+import { db, query } from "./db";
 
 async function main() {
   let hashes: string[] = [];
@@ -18,17 +18,8 @@ async function main() {
   let set = new Set(hashes as unknown as string[]);
   console.log(set.size);
 
-  set.forEach((c, i) => {
-    setTimeout(() => {
-      database.createDocument(
-        "65df8c18771056640296",
-        "65df7a52b828a8e50164",
-        c,
-        {
-          code: c,
-        }
-      );
-    }, 1000 * 3);
+  set.forEach((value) => {
+    query("INSERT INTO kody (code, used) VALUES (?, ?)", [value, false]);
   });
 }
 
