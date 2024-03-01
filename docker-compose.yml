@@ -54,6 +54,10 @@ services:
       - obe
     depends_on:
       - mysql
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uczen.rule=Host(`dashboard-rekolekcje.marszalkowski.dev`)"
+      - "traefik.http.services.uczen.loadbalancer.server.port=8080"
 
   traefik:
     image: traefik:v2.6
