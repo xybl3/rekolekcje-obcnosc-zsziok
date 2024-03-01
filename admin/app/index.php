@@ -123,7 +123,7 @@ $classes = array(
         <form method="get">
             <label for="date">
                 Wybierz datę:
-                <input type="date" name="date" value="<?php if(isset($_GET['date'])) echo $_GET['date'];?>">
+                <input type="date" name="date" value="<?php echo isset($_GET['date']) ? $_GET['date'] : date('Y-m-d'); ?>">
             </label>
             <?php if($teacher["class"] == "*") { ?>
             <label for="class">

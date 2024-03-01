@@ -1,4 +1,17 @@
 services:
+# # proxy
+#   traefik:
+#     image: traefik:v2.6
+#     command:
+#       - "--api.insecure=true"
+#       - "--providers.docker"
+#     ports:
+#       - "80:80"
+#       - "443:443"
+#     volumes:
+#       - "/var/run/docker.sock:/var/run/docker.sock"
+
+
   mysql:
     image: mysql
     environment:
@@ -39,6 +52,9 @@ services:
       - mysql
     networks:
       - obe
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.uczen.rule=Host(`uczen.localhost`)
 
   admin_panel:
     build: 
