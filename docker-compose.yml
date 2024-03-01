@@ -55,9 +55,9 @@ services:
     depends_on:
       - mysql
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.uczen.rule=Host(`dashboard-rekolekcje.marszalkowski.dev`)"
-      - "traefik.http.services.uczen.loadbalancer.server.port=8080"
+    - "traefik.enable=true"
+    - "traefik.http.routers.admin_panel.rule=Host(`dashboard-rekolekcje.marszalkowski.dev`)"
+    - "traefik.http.services.admin_panel.loadbalancer.server.port=80"
 
   traefik:
     image: traefik:v2.6
