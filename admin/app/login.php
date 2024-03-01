@@ -29,6 +29,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login</title>
         <link rel="stylesheet" href="login.css">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     </head>
     <body style="display:flex; flex-direction: column; justify-content: center; align-items: center;">
         <div class="login-container">
