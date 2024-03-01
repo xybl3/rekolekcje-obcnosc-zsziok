@@ -1,0 +1,129 @@
+/* Reset styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Light theme */
+.light-theme {
+  --bg-color: #f2f2f2;
+  --text-color: #333;
+  --nav-bg-color: #333;
+  --nav-text-color: #fff;
+  --table-even-bg: #e1e1e1;
+  --table-odd-bg: #f9f9f9;
+  --table-border-color: #ccc;
+}
+
+/* Dark theme */
+.dark-theme {
+  --bg-color: #222;
+  --text-color: #fff;
+  --nav-bg-color: #111;
+  --nav-text-color: #fff;
+  --table-even-bg: #333;
+  --table-odd-bg: #444;
+  --table-border-color: #555;
+}
+
+/* Body styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Navigation styles */
+nav {
+  background-color: var(--nav-bg-color);
+  color: var(--nav-text-color);
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav a {
+  color: var(--nav-text-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #ccc;
+}
+
+/* Main styles */
+main {
+  margin: 20px;
+}
+
+/* Form styles */
+form {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type="date"],
+select {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid;
+}
+
+input[type="submit"] {
+  padding: 8px 20px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+  background-color: #555;
+}
+
+/* Table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px;
+  border-bottom: 1px solid var(--table-border-color);
+}
+
+th {
+  background-color: #333;
+  color: #fff;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: var(--table-even-bg);
+}
+
+tbody tr:nth-child(even) {
+  background-color: var(--table-odd-bg);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+tbody tr {
+  animation: fadeIn 0.5s ease;
+}
