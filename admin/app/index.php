@@ -169,6 +169,11 @@ $classes = array(
                     </tr>
                 </thead>
                 <tbody>
+                    <?php
+                        if(count($students) == 0) {
+                            echo "<tr><td colspan='9'>Brak wyników</td></tr>";
+                        }
+                    ?>
                     <?php foreach($students as $key => $student) { ?>
                         <tr>
                             <td><?php echo $key + 1; ?></td>
