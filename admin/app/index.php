@@ -48,7 +48,8 @@ if (isset($_GET['date'])) {
 }
 
 if(isset($_GET['selectedClass']) && $_GET['selectedClass'] != "*") {
-    $students_stmt->bindParam(":selectedClass", strtolower($_GET['selectedClass']));
+    $lower_class = strtolower($_GET['selectedClass']);
+    $students_stmt->bindParam(":selectedClass", $lower_class);
 }
 
 $students_stmt->execute();
