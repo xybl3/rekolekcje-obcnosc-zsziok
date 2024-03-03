@@ -51,6 +51,10 @@ export default function Home() {
               "Dostęp do lokalizaji jest wymagany do zweryfikowania obecności"
             );
           }
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 0,
         }
       );
     } else {
