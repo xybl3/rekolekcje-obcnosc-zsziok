@@ -41,22 +41,41 @@ export default function Home() {
     if (navigator.geolocation) {
       // Get the user's location
       // check if the user has allowed to share their location
-      navigator.geolocation.getCurrentPosition(
+      navigator.geolocation.watchPosition(
         (position) => {
           setUserLocation(position);
         },
         (error) => {
-          if (error.PERMISSION_DENIED) {
+          if (error.code === error.PERMISSION_DENIED) {
             alert(
-              "Dostęp do lokalizaji jest wymagany do zweryfikowania obecności"
+              "Dostęp do lokalizacji jest wymagany do zweryfikowania obecności. Jeśli zezwoliłeś/aś na dostep lokalizacji, a nadal widzisz ten komunikat, uzyj innej przegladarki(np Google Chrome). W ostatecznosci udaj sie do zakrystii, aby potwierdzić obecność"
             );
           }
         },
         {
           enableHighAccuracy: true,
           maximumAge: 0,
+          timeout: 10000,
         }
       );
+
+      // navigator.geolocation.getCurrentPosition(
+      //   (position) => {
+      //     setUserLocation(position);
+      //   },
+      //   (error) => {
+      //     if (error.code === error.PERMISSION_DENIED) {
+      //       alert(
+      //         "Dostęp do lokalizacji jest wymagany do zweryfikowania obecności"
+      //       );
+      //     }
+      //   },
+      //   {
+      //     enableHighAccuracy: true,
+      //     maximumAge: 0,
+      //     timeout: 10000,
+      //   }
+      // );
     } else {
       console.log("Geolocation is not supported by this browser.");
     }
@@ -65,14 +84,14 @@ export default function Home() {
   useEffect(() => {
     setName(localStorage.getItem("name") || "");
     setSelectedClass(localStorage.getItem("class") || "");
-    getUserLocation();
 
     const savedToday =
       localStorage.getItem("lastSaved") ==
       `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`;
 
-    setAlreadySent(savedToday);
+    // setAlreadySent(savedToday);
     setLoading(false);
+    getUserLocation();
   }, [typeof window !== "undefined"]);
 
   if (loading) {
