@@ -233,6 +233,16 @@ export default function Home() {
                         case 400:
                           setErrorMessage("Pola nie zostały uzupełnione");
                           break;
+                        case 500:
+                          setErrorMessage(
+                            `Błąd serwera: ${errorResponse.response?.status}`
+                          );
+                          break;
+                        default:
+                          setErrorMessage(
+                            "Błąd " + errorResponse.response?.status
+                          );
+                          break;
                       }
                       setDataSentLoadingStatus("error");
                     }

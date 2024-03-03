@@ -2,6 +2,7 @@
 session_start();
 
 require_once "db.php";
+global $conn;
 
 if(!isset($_SESSION['id'])){
     header("Location: login.php");
@@ -13,7 +14,7 @@ $teacher_stmt->bindParam(":id", $_SESSION['id']);
 $teacher_stmt->execute();
 $teacher = $teacher_stmt->fetch();
 
-$sql = "SELECT `obecnosc`.`id`, `obecnosc`.`name`, `obecnosc`.`surname`, `obecnosc`.`class`, `obecnosc`.`sent_at`, `obecnosc`.`in_church`, `obecnosc`.`latitude`, `obecnosc`.`longitude`, `kody`.`code` FROM `obecnosc` JOIN `kody` ON `kody`.`id` = `obecnosc`.`used_code` WHERE 1";
+$sql = "SELECT `obecnosc`.`id`, `obecnosc`.`name`, `obecnosc`.`surname`, `obecnosc`.`class`, `obecnosc`.`sent_at`, `obecnosc`.`in_church`, `obecnosc`.`latitude`, `obecnosc`.`longitude`, `kody`.`code` FROM `obecnosc` LEFT JOIN `kody` ON `kody`.`id` = `obecnosc`.`used_code` WHERE 1";
 
 if($teacher['class'] != "*") {
     $sql .= " AND `obecnosc`.`class` = :teacherClass";
@@ -36,6 +37,12 @@ else if(isset($_GET['show']) && $_GET['show'] == "all") {
     $sql .= "";
 }
 
+if(isset($_GET['sort']) && $_GET['sort'] == "asc") {
+    $sql .= " ORDER BY `obecnosc`.`sent_at` ASC";
+} else {
+    $sql .= " ORDER BY `obecnosc`.`sent_at` DESC";
+}
+
 
 $students_stmt = $conn->prepare($sql);
 
@@ -55,46 +62,10 @@ if(isset($_GET['selectedClass']) && $_GET['selectedClass'] != "*") {
 $students_stmt->execute();
 $students = $students_stmt->fetchAll(PDO::FETCH_ASSOC);
 
+require_once "classes.php";
+global $classes;
 
 
-
-$classes = array(
-  array("label" => "5TEP", "value" => "5TEP"),
-  array("label" => "5TIP", "value" => "5TIP"),
-  array("label" => "5THP", "value" => "5THP"),
-  array("label" => "5TRP", "value" => "5TRP"),
-  array("label" => "4TE", "value" => "4TE"),
-  array("label" => "4TR", "value" => "4TR"),
-  array("label" => "4TI", "value" => "4TI"),
-  array("label" => "4TRI", "value" => "4TRI"),
-  array("label" => "4LOC", "value" => "4LOC"),
-  array("label" => "4LOD", "value" => "4LOD"),
-  array("label" => "3TE", "value" => "3TE"),
-  array("label" => "3TR", "value" => "3TR"),
-  array("label" => "3TI", "value" => "3TI"),
-  array("label" => "3TRH", "value" => "3TRH"),
-  array("label" => "3LOC", "value" => "3LOC"),
-  array("label" => "3LOD", "value" => "3LOD"),
-  array("label" => "3W", "value" => "3W"),
-  array("label" => "3HW", "value" => "3HW"),
-  array("label" => "2TE", "value" => "2TE"),
-  array("label" => "2TRH", "value" => "2TRH"),
-  array("label" => "2TI", "value" => "2TI"),
-  array("label" => "2TR", "value" => "2TR"),
-  array("label" => "2LOA", "value" => "2LOA"),
-  array("label" => "2LOC", "value" => "2LOC"),
-  array("label" => "2LOD", "value" => "2LOD"),
-  array("label" => "2W", "value" => "2W"),
-  array("label" => "1TE", "value" => "1TE"),
-  array("label" => "1TRH", "value" => "1TRH"),
-  array("label" => "1TI", "value" => "1TI"),
-  array("label" => "1TR", "value" => "1TR"),
-  array("label" => "1LOA", "value" => "1LOA"),
-  array("label" => "1LOC", "value" => "1LOC"),
-  array("label" => "1LOD", "value" => "1LOD"),
-  array("label" => "1W", "value" => "1W"),
-  array("label" => "1H", "value" => "1H"),
-);
 ?>
 
 
@@ -154,7 +125,18 @@ $classes = array(
                 </select>
             </label>
 
-            <input type="submit" value="Filtruj">
+            <label for="sort">
+                Sortuj:
+                <select name="sort" id="sort">
+                    <option value="desc" <?php if(isset($_GET["sort"]) && $_GET["sort"] == "desc") echo "selected"; ?> >Od ostatniego</option>
+                    <option value="asc" <?php if(isset($_GET["sort"]) && $_GET["sort"] == "asc") echo "selected"; ?> >Od najstarszego</option>
+                </select>
+            </label>
+
+            <div>
+                <input type="submit" value="Filtruj">
+                <a href="/add_presence.php" class="button">Dodaj obecność</a>
+            </div>
         </form>
         <table>
                 <thead>
