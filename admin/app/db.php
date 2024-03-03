@@ -10,5 +10,5 @@
 
 
 
-// $conn = new PDO("mysql:host=mysql;dbname=rekolekcje", "root", "$4**jd!@kdLL");
-$conn = new PDO("mysql:host=127.0.0.1;dbname=rekolekcje", "root", "");
+$conn = new PDO("mysql:host=mysql;dbname=rekolekcje", "root", "$4**jd!@kdLL");
+// $conn = new PDO("mysql:host=127.0.0.1;dbname=rekolekcje", "root", "");
