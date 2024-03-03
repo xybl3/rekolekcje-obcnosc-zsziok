@@ -50,13 +50,15 @@ export async function POST(request: Request) {
 
   const churchLatitude = 54.378496;
   const churchLongitude = 18.5892864;
-  const accuracyError = 0.005; // 500m accuracy error
 
-  let isInChurch =
-    data.latitude > churchLatitude - accuracyError &&
-    data.latitude < churchLatitude + accuracyError &&
-    data.longitude > churchLongitude - accuracyError &&
-    data.longitude < churchLongitude + accuracyError;
+  let isInChurch = false;
+
+  if (
+    Math.abs(data.latitude - churchLatitude) < 0.0009 &&
+    Math.abs(data.longitude - churchLongitude) < 0.0009
+  ) {
+    isInChurch = true;
+  }
 
   // let userPresenceRecordToSave: UserPresenceRecord = {
   // ...data,
