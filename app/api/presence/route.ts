@@ -54,8 +54,8 @@ export async function POST(request: Request) {
   let isInChurch = false;
 
   if (
-    Math.abs(data.latitude - churchLatitude) < 0.1 &&
-    Math.abs(data.longitude - churchLongitude) < 0.1
+    Math.abs(data.latitude - churchLatitude) < 0.0009 &&
+    Math.abs(data.longitude - churchLongitude) < 0.0014
   ) {
     isInChurch = true;
   }
