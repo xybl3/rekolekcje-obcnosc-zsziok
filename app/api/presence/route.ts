@@ -48,14 +48,14 @@ export async function POST(request: Request) {
 
   // church is at 54,378496 lat, 18,5892864 long. Please make boolean that checks if user is in church, remember to include GPS accuracy in the check, so that it's not too strict
 
-  const churchLatitude = 54.378496;
-  const churchLongitude = 18.5892864;
+  const churchLatitude = 54.3356355;
+  const churchLongitude = 18.1914201;
 
   let isInChurch = false;
 
   if (
-    Math.abs(data.latitude - churchLatitude) < 0.1 &&
-    Math.abs(data.longitude - churchLongitude) < 0.1
+    Math.abs(data.latitude - churchLatitude) < 0.0009 &&
+    Math.abs(data.longitude - churchLongitude) < 0.0014
   ) {
     isInChurch = true;
   }
