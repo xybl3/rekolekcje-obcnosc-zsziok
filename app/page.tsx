@@ -161,8 +161,11 @@ export default function Home() {
             <h2 className="text-xl opacity-80">Weryfikacja obecności</h2>
 
             <p className="opacity-50 text-center">
-              Podaj swoje imię i nazwisko oraz wstaw zdjęcie, a następnie
+              Podaj swoje imię i nazwisko oraz wpisz unikalny kod a następnie
               kliknij przycisk "Zatwierdź"
+            </p>
+            <p className="opacity-50 text-center text-sm">
+              Jeśli nie masz kodu, zgłoś się do zakrystii
             </p>
             {!userLocation && (
               <Alert variant={"destructive"} className="mt-3">
