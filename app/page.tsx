@@ -32,6 +32,8 @@ export default function Home() {
 
   const [userIP, setUserIP] = useState<string>("");
 
+  const [userAgent, setUserAgent] = useState<string>("");
+
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value); // Update the name state with input value
   };
@@ -84,9 +86,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    axios.get("https://api.ipify.org/?format=json").then((res) => {
-      setUserIP(res.data.ip);
-    });
+    setUserAgent(navigator.userAgent);
     setName(localStorage.getItem("name") || "");
     setSelectedClass(localStorage.getItem("class") || "");
 
@@ -97,6 +97,9 @@ export default function Home() {
     // setAlreadySent(savedToday);
     setLoading(false);
     getUserLocation();
+    axios.get("https://api.ipify.org/?format=json").then((res) => {
+      setUserIP(res.data.ip);
+    });
   }, [typeof window !== "undefined"]);
 
   if (loading) {
