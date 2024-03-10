@@ -30,6 +30,8 @@ export default function Home() {
   >("not-sent");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
+  const [userIP, setUserIP] = useState<string>("");
+
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value); // Update the name state with input value
   };
@@ -82,6 +84,9 @@ export default function Home() {
   };
 
   useEffect(() => {
+    axios.get("https://api.ipify.org/?format=json").then((res) => {
+      setUserIP(res.data.ip);
+    });
     setName(localStorage.getItem("name") || "");
     setSelectedClass(localStorage.getItem("class") || "");
 

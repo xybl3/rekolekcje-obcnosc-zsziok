@@ -7,6 +7,7 @@ type UserPresenceRecord = {
   latitude: number;
   longitude: number;
   code: string;
+  ip?: string;
 };
 
 /**
@@ -69,7 +70,7 @@ export async function POST(request: Request) {
   // await addPresenceRecord(userPresenceRecordToSave);
 
   await query(
-    "INSERT INTO `obecnosc`(`name`, `surname`, `class`, `sent_at`, `in_church`, `latitude`, `longitude`, `used_code`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO `obecnosc`(`name`, `surname`, `class`, `sent_at`, `in_church`, `latitude`, `longitude`, `used_code`, `ip`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
     [
       data.name,
       data.surname,
@@ -79,6 +80,7 @@ export async function POST(request: Request) {
       data.latitude,
       data.longitude,
       (res as any)[0].id,
+      data.ip,
     ]
   );
 
