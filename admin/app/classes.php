@@ -26,6 +26,7 @@ $classes = array(
   array("label" => "2LOC", "value" => "2LOC"),
   array("label" => "2LOD", "value" => "2LOD"),
   array("label" => "2W", "value" => "2W"),
+  array("label" => "2H", "value" => "2H"),
   array("label" => "1TE", "value" => "1TE"),
   array("label" => "1TRH", "value" => "1TRH"),
   array("label" => "1TI", "value" => "1TI"),

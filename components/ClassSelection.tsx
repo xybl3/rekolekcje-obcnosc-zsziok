@@ -33,7 +33,7 @@ export const classes: { label: string; value: string }[] = [
   { label: "3LOD", value: "3LOD" },
   { label: "3W", value: "3W" },
   { label: "3HW", value: "3HW" },
-  //Klasy 2 TE TRH TI TR LOA LOC LOD W
+  //Klasy 2 TE TRH TI TR LOA LOC LOD W H
   { label: "2TE", value: "2TE" },
   { label: "2TRH", value: "2TRH" },
   { label: "2TI", value: "2TI" },
@@ -42,6 +42,7 @@ export const classes: { label: string; value: string }[] = [
   { label: "2LOC", value: "2LOC" },
   { label: "2LOD", value: "2LOD" },
   { label: "2W", value: "2W" },
+  { label: "2H", value: "2H" },
   //Klasy 1 TE TRH TI TR LOA LOC LOD W H
   { label: "1TE", value: "1TE" },
   { label: "1TRH", value: "1TRH" },

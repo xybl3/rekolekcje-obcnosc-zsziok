@@ -30,11 +30,9 @@ if(isset($_POST["submit"])) {
     $stmt->bindParam(":usedCode", $usedCode);
     $stmt->execute();
 
-    $redirect = $_POST['redir'];
-
     $_POST = array();
 
-    if(isset($redirect)) {
+    if(isset($_POST['redir'])) {
         header("Location: index.php");
         exit;
     }
