@@ -160,7 +160,7 @@ global $classes;
                         }
                     ?>
                     <?php foreach($students as $key => $student) { ?>
-                        <tr>
+                        <tr <?php if($student['in_church'] == 0) echo "style='background-color: #ff4242'" ?> >
                             <td><?php echo $key + 1; ?></td>
                             <td><?php echo $student['name']; ?></td>
                             <td><?php echo $student['surname']; ?></td>
