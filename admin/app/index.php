@@ -170,7 +170,7 @@ global $classes;
                             <td><?php echo $student['latitude']; ?></td>
                             <td><?php echo $student['longitude']; ?></td>
                             <td><?php echo $student['code']; ?></td>
-                            <td><?php echo "<a href='https://www.google.com/maps/search/?api=1&query=".$student['latitude'].",".$student['longitude']."'>Mapy</a>"; ?></td>
+                            <td><?php if (isset($student['latitude']) && isset($student['longitude'])) echo "<a href='https://www.google.com/maps/search/?api=1&query=".$student['latitude'].",".$student['longitude']."'>Mapy</a>"; ?></td>
                         </tr>
                     <?php } ?>
                 </tbody>
