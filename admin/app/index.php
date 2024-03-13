@@ -150,6 +150,7 @@ global $classes;
                         <th>Szerokość</th>
                         <th>Długość</th>
                         <th>Uzyty kod</th>
+                        <th>Mapy</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -169,6 +170,7 @@ global $classes;
                             <td><?php echo $student['latitude']; ?></td>
                             <td><?php echo $student['longitude']; ?></td>
                             <td><?php echo $student['code']; ?></td>
+                            <td><?php echo "https://www.google.com/maps/search/?api=1&query=".$student['latitude'].",".$student['longitude']; ?></td>
                         </tr>
                     <?php } ?>
                 </tbody>
