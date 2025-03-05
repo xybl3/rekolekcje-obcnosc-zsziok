@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import logo from "@/logo.png";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import ClassSelection from "@/components/ClassSelection";
@@ -116,7 +115,7 @@ export default function Home() {
               className="h-[128px] w-[128px] rounded mb-12 mt-12"
               alt="logo"
             />
-            <h1 className="text-3xl font-bold">Rekolekcje 2024</h1>
+            <h1 className="text-3xl font-bold">Rekolekcje 2025</h1>
             <h2 className="text-xl opacity-80 mb-3">Weryfikacja obecności</h2>
 
             <Alert>
