@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import ClassSelection from "@/components/ClassSelection";
@@ -111,7 +111,7 @@ export default function Home() {
         >
           <div className="flex flex-col items-center justify-center p-3">
             <Image
-              src={logo}
+              src={require("../logo.png")}
               className="h-[128px] w-[128px] rounded mb-12 mt-12"
               alt="logo"
             />
@@ -152,7 +152,7 @@ export default function Home() {
         >
           <div className="flex flex-col items-center justify-center p-3">
             <Image
-              src={logo}
+              src={require("../logo.png")}
               className="h-[128px] w-[128px] rounded mb-12 mt-12"
               alt="logo"
             />
