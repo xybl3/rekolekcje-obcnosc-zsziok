@@ -67,7 +67,7 @@ function ClassSelection({
 
   return (
     <Popover open={classSelectionOpen} onOpenChange={setClassSelectionOpen}>
-      <PopoverTrigger asChild className="mt-2">
+      <PopoverTrigger asChild className="mt-3">
         <Button
           variant="outline"
           role="combobox"
