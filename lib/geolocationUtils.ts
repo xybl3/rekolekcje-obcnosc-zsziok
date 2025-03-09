@@ -4,11 +4,17 @@ export const getGeolocation = ({
   onUpdate: (position: GeolocationPosition) => void;
 }) => {
   if (!navigator.geolocation) {
+    alert(
+      "Przeglądarka nie ma dostępu do lokalizacji, podejdź do zakrystii aby zweryfikować obecność."
+    );
     throw new Error("Geolocation is not supported by your browser");
   }
   navigator.geolocation.watchPosition(
     onUpdate,
     (error) => {
+      alert(
+        "Przeglądarka nie ma dostępu do lokalizacji, podejdź do zakrystii aby zweryfikować obecność."
+      );
       throw new Error(`Unable to retrieve your location: ${error.message}`);
     },
     {
