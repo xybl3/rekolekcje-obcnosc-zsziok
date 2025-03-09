@@ -79,9 +79,9 @@ export default function Home() {
   });
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-dvh min-w-max">
+    <main className="flex flex-col items-center justify-center min-h-dvh ">
       <div className="w-full md:w-3/5 lg:w-2/5 bg-gray-100 dark:bg-gray-900 p-5 rounded-lg">
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center text-center md:text-left">
           <Image src={logo} alt="Logo ZSZiOK" />
           <h1 className="text-4xl font-bold">Rekolekcje ZSZiOK 2025</h1>
           <h2 className="text-2xl text-gray-400">
@@ -162,12 +162,14 @@ export default function Home() {
           </Button>
         </div>
       </div>
-      <p className="text-gray-400 text-sm mt-3">
-        Jeśli masz problem z potwierdzeniem obecności, udaj się do zakrystii.{" "}
-      </p>
-      <p className="text-gray-600 text-sm">
-        Weryfikator stworzony na potrzeby ZSZiO do weryfikacji obecności
-      </p>
+      <div className="w-full md:w-3/5 lg:w-2/5 bg-gray-100 dark:bg-gray-900 p-5 rounded-lg mt-5 text-center">
+        <p className="text-gray-400 text-sm mt-3">
+          Jeśli masz problem z potwierdzeniem obecności, udaj się do zakrystii.{" "}
+        </p>
+        <p className="text-gray-600 text-sm">
+          Weryfikator stworzony na potrzeby ZSZiO do weryfikacji obecności
+        </p>
+      </div>
     </main>
   );
 }

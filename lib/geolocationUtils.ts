@@ -12,9 +12,6 @@ export const getGeolocation = ({
   navigator.geolocation.watchPosition(
     onUpdate,
     (error) => {
-      alert(
-        "Przeglądarka nie ma dostępu do lokalizacji, podejdź do zakrystii aby zweryfikować obecność."
-      );
       throw new Error(`Unable to retrieve your location: ${error.message}`);
     },
     {
