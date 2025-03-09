@@ -16,7 +16,7 @@ type UserPresenceRecord = {
  */
 export async function POST(request: Request) {
   const data = (await request.json()) as unknown as UserPresenceRecord;
-  console.log(data);
+  // console.log(data);
 
   if (
     !data.name ||

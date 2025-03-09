@@ -1,302 +1,173 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import logo from "@/logo.png";
 import { Input } from "@/components/ui/input";
 import ClassSelection from "@/components/ClassSelection";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { AlertTriangle, Check } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { LocateIcon, RocketIcon, Check, Loader2 } from "lucide-react";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
-import CameraComponent from "@/components/CameraComponent";
-
+import { getGeolocation } from "@/lib/geolocationUtils";
+import axios, { AxiosError } from "axios";
 export default function Home() {
-  const [loading, setLoading] = useState(true);
-  const [alreadySent, setAlreadySent] = useState(false);
-
   const [userLocation, setUserLocation] = useState<GeolocationPosition | null>(
     null
   );
+  const [error, setError] = useState<string | null>(null);
 
-  const nameRef = useRef<HTMLInputElement>(null);
-  const [name, setName] = useState<string>("");
-  // const [picture, setPicture] = useState<string | ArrayBuffer | null>("");
-  const [uniqueCode, setUniqueCode] = useState<string | undefined>("");
+  const [params, setParams] = useState({
+    name: "",
+    schoolClass: "",
+    code: "",
+  });
 
-  const [selectedClass, setSelectedClass] = useState("");
+  type PresenceStatusSent = "not-sent" | "loading" | "sent" | "error";
 
-  const [dataSentLoadingStatus, setDataSentLoadingStatus] = useState<
-    "not-sent" | "loading" | "sent" | "error"
-  >("not-sent");
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [presenceStatus, setPresenceStatus] =
+    useState<PresenceStatusSent>("not-sent");
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value); // Update the name state with input value
-  };
-
-  const handleUnuqueCode = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUniqueCode(event.target.value);
-  };
-  const getUserLocation = () => {
-    if (navigator.geolocation) {
-      // Get the user's location
-      // check if the user has allowed to share their location
-      navigator.geolocation.watchPosition(
-        (position) => {
-          setUserLocation(position);
-        },
-        (error) => {
-          if (error.code === error.PERMISSION_DENIED) {
-            alert(
-              "Dostęp do lokalizacji jest wymagany do zweryfikowania obecności. Jeśli zezwoliłeś/aś na dostep lokalizacji, a nadal widzisz ten komunikat, uzyj innej przegladarki(np Google Chrome). W ostatecznosci udaj sie do zakrystii, aby potwierdzić obecność"
-            );
-          }
-        },
-        {
-          enableHighAccuracy: true,
-          maximumAge: 0,
-          timeout: 10000,
+  const sendPresence = async () => {
+    try {
+      setPresenceStatus("loading");
+      await axios.post("/api/presence", {
+        name: params.name.split(" ")[0],
+        surname: params.name.split(" ")[1],
+        class: params.schoolClass,
+        latitude: userLocation?.coords.latitude,
+        longitude: userLocation?.coords.longitude,
+        code: params.code,
+      });
+      setPresenceStatus("sent");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        switch (err.response?.status) {
+          case 404:
+            setError("Wpisany kod jest nieprawidłowy");
+            alert("Wpisany kod jest nieprawidłowy");
+            break;
+          case 400:
+            setError("Wpisane dane są nieprawidłowe");
+            alert("Wpisane dane są nieprawidłowe");
+            break;
+          case 403:
+            setError("Wpisany kod został już użyty");
+            alert("Wpisany kod został już użyty");
+            break;
+          default:
+            setError("Wystąpił błąd " + err.response?.status);
+            alert("Wystąpił błąd " + err.response?.status);
         }
-      );
 
-      // navigator.geolocation.getCurrentPosition(
-      //   (position) => {
-      //     setUserLocation(position);
-      //   },
-      //   (error) => {
-      //     if (error.code === error.PERMISSION_DENIED) {
-      //       alert(
-      //         "Dostęp do lokalizacji jest wymagany do zweryfikowania obecności"
-      //       );
-      //     }
-      //   },
-      //   {
-      //     enableHighAccuracy: true,
-      //     maximumAge: 0,
-      //     timeout: 10000,
-      //   }
-      // );
-    } else {
-      console.log("Geolocation is not supported by this browser.");
+        setPresenceStatus("error");
+      }
     }
   };
 
   useEffect(() => {
-    setName(localStorage.getItem("name") || "");
-    setSelectedClass(localStorage.getItem("class") || "");
-
-    const savedToday =
-      localStorage.getItem("lastSaved") ==
-      `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`;
-
-    // setAlreadySent(savedToday);
-    setLoading(false);
-    getUserLocation();
-  }, [typeof window !== "undefined"]);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col min-h-[100vh] justify-center items-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <p>Ładowanie, proszę czekać</p>
-      </div>
-    );
-  }
-
-  if (alreadySent) {
-    return (
-      <div className="flex flex-col min-h-[100vh] justify-center items-center">
-        <div
-          className="w-[96%] lg:w-2/5 h-full
-         lg:h-[80vh] flex flex-col bg-slate-900 rounded-xl"
-        >
-          <div className="flex flex-col items-center justify-center p-3">
-            <Image
-              src={require("../logo.png")}
-              className="h-[128px] w-[128px] rounded mb-12 mt-12"
-              alt="logo"
-            />
-            <h1 className="text-3xl font-bold">Rekolekcje 2025</h1>
-            <h2 className="text-xl opacity-80 mb-3">Weryfikacja obecności</h2>
-
-            <Alert>
-              <Check></Check>
-              <AlertTitle>Obecność potwierdzona</AlertTitle>
-              <AlertDescription>
-                Twoja obecność jest juz zapisana.<br></br>
-                <p className="opacity-60">
-                  Imie i nazwisko: {name}
-                  <br></br>
-                  Klasa: {selectedClass}
-                </p>
-              </AlertDescription>
-            </Alert>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    try {
+      getGeolocation({
+        onUpdate: (pos) => {
+          console.log(pos);
+          setUserLocation(pos);
+        },
+      });
+    } catch (err) {
+      if (userLocation === null) {
+        setError("Wystąpił błąd");
+      }
+    }
+  });
 
   return (
-    <>
-      <AlertDialog open={dataSentLoadingStatus === "loading"}>
-        <AlertDialogContent>
-          <RocketIcon className="h-8 w-8 animate-spin" />
-          <p className="mt-4">Wysyłanie danych...</p>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <div className="flex flex-col min-h-[100vh] justify-center items-center">
-        <div
-          className="w-[96%] lg:w-2/5 h-full
-         lg:h-[80vh] flex flex-col bg-slate-900 rounded-xl"
-        >
-          <div className="flex flex-col items-center justify-center p-3">
-            <Image
-              src={require("../logo.png")}
-              className="h-[128px] w-[128px] rounded mb-12 mt-12"
-              alt="logo"
-            />
-            <h1 className="text-3xl font-bold">Rekolekcje 2024</h1>
-            <h2 className="text-xl opacity-80">Weryfikacja obecności</h2>
-
-            <p className="opacity-50 text-center">
-              Podaj swoje imię i nazwisko oraz wpisz unikalny kod a następnie
-              kliknij przycisk "Zatwierdź"
-            </p>
-            <p className="opacity-50 text-center text-sm">
-              Jeśli nie masz kodu, zgłoś się do zakrystii
-            </p>
-            {!userLocation && (
-              <Alert variant={"destructive"} className="mt-3">
-                <LocateIcon className="h-4 w-4" />
-                <AlertTitle>Poczekaj</AlertTitle>
-                <AlertDescription>
-                  Lokalizacja jest pobierana...
-                </AlertDescription>
-              </Alert>
-            )}
-            {dataSentLoadingStatus === "sent" && (
-              <Alert variant={"default"} className="mt-3">
-                <RocketIcon className="h-4 w-4" />
-                <AlertTitle>Sukces</AlertTitle>
-                <AlertDescription>
-                  Dane zostały wysłane pomyślnie
-                </AlertDescription>
-              </Alert>
-            )}
-            {dataSentLoadingStatus === "error" && (
-              <Alert variant={"destructive"} className="mt-3">
-                <RocketIcon className="h-4 w-4" />
-                <AlertTitle>Błąd</AlertTitle>
-                <AlertDescription>{errorMessage}</AlertDescription>
-              </Alert>
-            )}
-            {dataSentLoadingStatus !== "sent" && (
-              <div className="flex flex-col mt-3 w-full lg:w-2/5 justify-center sm:gap-3">
-                <Input
-                  placeholder="Imię i nazwisko"
-                  ref={nameRef}
-                  value={name}
-                  onChange={handleNameChange}
-                />
-                <ClassSelection
-                  defaultValue={selectedClass}
-                  onSelect={(val) => {
-                    setSelectedClass(val);
-                    localStorage.setItem("class", val);
-                  }}
-                />
-                <Input
-                  placeholder="Unikalny kod"
-                  // ref={nameRef}
-                  value={uniqueCode}
-                  onChange={handleUnuqueCode}
-                />
-                {/* <div className="mt-3"> */}
-                {/* <CameraComponent
-                    setData={(data) => {
-                      // console.log(data);
-                      setPicture(data);
-                    }}
-                  /> */}
-                {/* </div> */}
-
-                <button
-                  className="bg-blue-600 transition-all duration-300 text-white px-4 py-2 rounded-lg mt-4 disabled:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-55 w-full"
-                  disabled={
-                    !userLocation || !name || !selectedClass || !uniqueCode
-                  }
-                  onClick={async () => {
-                    setDataSentLoadingStatus("loading");
-                    localStorage.setItem("name", name);
-
-                    try {
-                      await axios.post("/api/presence", {
-                        name: name.split(" ")[0],
-                        surname: name.split(" ")[1],
-                        class: selectedClass,
-                        latitude: userLocation?.coords.latitude || 0,
-                        longitude: userLocation?.coords.longitude || 0,
-                        code: uniqueCode,
-                      });
-                      setDataSentLoadingStatus("sent");
-                      localStorage.setItem(
-                        "lastSaved",
-                        `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`
-                      );
-                    } catch (e) {
-                      const errorResponse = e as AxiosError;
-                      // console.log(errorResponse.code);
-
-                      switch (errorResponse.response?.status) {
-                        case 404:
-                          setErrorMessage("Nieprawidłowy kod");
-                          break;
-                        case 403:
-                          setErrorMessage("Kod został już użyty");
-                          break;
-                        case 400:
-                          setErrorMessage("Pola nie zostały uzupełnione");
-                          break;
-                        case 500:
-                          setErrorMessage(
-                            `Błąd serwera: ${errorResponse.response?.status}`
-                          );
-                          break;
-                        default:
-                          setErrorMessage(
-                            "Błąd " + errorResponse.response?.status
-                          );
-                          break;
-                      }
-                      setDataSentLoadingStatus("error");
-                    }
-
-                    // addPresenceRecord({
-                    //   name,
-                    //   surname: "",
-                    //   class: selectedClass,
-                    //   time: new Date(),
-                    //   isInChurch: true,
-                    //   latitude: userLocation?.coords.latitude || 0,
-                    //   longitude: userLocation?.coords.longitude || 0,
-                    // })
-                    //   .then(() => {
-                    //     setDataSentLoadingStatus("sent");
-                    //   })
-                    //   .catch((e) => {
-                    //     console.error(e);
-                    //     setDataSentLoadingStatus("error");
-                    //   });
-                  }}
-                >
-                  Zatwierdź
-                </button>
-              </div>
-            )}
-          </div>
+    <main className="flex flex-col items-center justify-center min-h-dvh min-w-max">
+      <div className="w-full md:w-3/5 lg:w-2/5 bg-gray-100 dark:bg-gray-900 p-5 rounded-lg">
+        <div className="flex flex-col items-center">
+          <Image src={logo} alt="Logo ZSZiOK" />
+          <h1 className="text-4xl font-bold">Rekolekcje ZSZiOK 2025</h1>
+          <h2 className="text-2xl text-gray-400">
+            Weryfikator obecności na rekolekcjach 2025
+          </h2>
+        </div>
+        {userLocation === null && (
+          <Alert>
+            <AlertTriangle />
+            <AlertTitle>Uwaga</AlertTitle>
+            <AlertDescription>
+              Lokalizacja użytkownika jest pobierana. Proszę zezwolić na
+              lokalizację
+            </AlertDescription>
+          </Alert>
+        )}
+        {error !== null && (
+          <Alert variant={"destructive"}>
+            <AlertTriangle />
+            <AlertTitle>Błąd</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        <div className="flex flex-col gap-4 mt-4">
+          {presenceStatus === "sent" ? (
+            <Alert variant={"default"}>
+              <Check />
+              <AlertTitle>Sukces</AlertTitle>
+              <AlertDescription>
+                <p>Obecność została potwierdzona</p>
+                <p>Dziękujemy za udział w rekolekcjach!</p>
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <>
+              <Input
+                placeholder="Imię i nazwisko"
+                onChange={(v) => {
+                  setParams({ ...params, name: v.target.value });
+                }}
+              />
+              <ClassSelection
+                onSelect={(v) => {
+                  setParams({ ...params, schoolClass: v });
+                }}
+              />
+              <Input
+                placeholder="Unikalny kod"
+                onChange={(v) => {
+                  setParams({ ...params, code: v.target.value });
+                }}
+              />
+            </>
+          )}
+          <Button
+            disabled={
+              userLocation === null ||
+              presenceStatus === "loading" ||
+              params.name === "" ||
+              params.schoolClass === "" ||
+              params.code === "" ||
+              params.name.split(" ").length < 2 ||
+              params.name.split(" ")[0] === "" ||
+              params.name.split(" ")[1] === "" ||
+              presenceStatus === "sent"
+            }
+            onClick={() => {
+              sendPresence();
+            }}
+          >
+            {presenceStatus === "loading"
+              ? "Wysyłanie..."
+              : presenceStatus === "sent"
+              ? "Wysłano!"
+              : presenceStatus === "error"
+              ? "Spróbuj ponownie"
+              : "Potwierdź obecność"}
+          </Button>
         </div>
       </div>
-    </>
+      <p className="text-gray-400 text-sm mt-3">
+        Jeśli masz problem z potwierdzeniem obecności, udaj się do zakrystii.{" "}
+      </p>
+      <p className="text-gray-600 text-sm">
+        Weryfikator stworzony na potrzeby ZSZiO do weryfikacji obecności
+      </p>
+    </main>
   );
 }

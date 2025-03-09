@@ -67,11 +67,11 @@ function ClassSelection({
 
   return (
     <Popover open={classSelectionOpen} onOpenChange={setClassSelectionOpen}>
-      <PopoverTrigger asChild className="mt-3">
+      <PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
-          className="w-full justify-between text-white"
+          className="w-full justify-between dark:text-white"
         >
           {/* {value ? value.toUpperCase() : "Wybierz klasę.."} */}
           {value && (
@@ -83,8 +83,8 @@ function ClassSelection({
           {/* <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" /> */}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0 h-[200px] bg-transparent">
-        <Command className="bg-transparent backdrop-blur-lg">
+      <PopoverContent className="w-full p-0 h-[300px] bg-transparent">
+        <Command className="">
           <CommandInput placeholder="Wybierz klasę" className="h-9" />
           <CommandEmpty>Klasa nie znaleziona</CommandEmpty>
           <CommandGroup className="overflow-y-auto scrollbar scrollbar">
