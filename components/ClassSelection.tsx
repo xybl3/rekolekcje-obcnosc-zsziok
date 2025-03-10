@@ -22,6 +22,7 @@ export const classes: { label: string; value: string }[] = [
   { label: "4TR", value: "4TR" },
   { label: "4TI", value: "4TI" },
   { label: "4TRI", value: "4TRI" },
+  { label: "4LOA", value: "4LOA" },
   { label: "4LOC", value: "4LOC" },
   { label: "4LOD", value: "4LOD" },
   //Klasy 3 TE TR TI TRH LOC LOD W
@@ -29,6 +30,7 @@ export const classes: { label: string; value: string }[] = [
   { label: "3TR", value: "3TR" },
   { label: "3TI", value: "3TI" },
   { label: "3TRH", value: "3TRH" },
+  { label: "3LOA", value: "3LOA" },
   { label: "3LOC", value: "3LOC" },
   { label: "3LOD", value: "3LOD" },
   { label: "3W", value: "3W" },
@@ -45,6 +47,7 @@ export const classes: { label: string; value: string }[] = [
   { label: "2H", value: "2H" },
   //Klasy 1 TE TRH TI TR LOA LOC LOD W H
   { label: "1TE", value: "1TE" },
+  { label: "1TH", value: "1TH" },
   { label: "1TRH", value: "1TRH" },
   { label: "1TI", value: "1TI" },
   { label: "1TR", value: "1TR" },
