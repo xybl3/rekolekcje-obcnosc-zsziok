@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ZSZIOK Rekolekcje 2025",
+  title: "ZSZIOK Rekolekcje 2026",
   description: "Weryfikator obecności na rekolekcjach",
 };
 

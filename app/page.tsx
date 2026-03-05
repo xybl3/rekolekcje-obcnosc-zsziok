@@ -11,7 +11,7 @@ import { getGeolocation } from "@/lib/geolocationUtils";
 import axios, { AxiosError } from "axios";
 export default function Home() {
   const [userLocation, setUserLocation] = useState<GeolocationPosition | null>(
-    null
+    null,
   );
   const [error, setError] = useState<string | null>(null);
 
@@ -71,21 +71,19 @@ export default function Home() {
           setUserLocation(pos);
         },
       });
-    } catch (err) {
-      if (userLocation === null) {
-        setError("Wystąpił błąd");
-      }
+    } catch {
+      setError("Wystąpił błąd");
     }
-  });
+  }, []);
 
   return (
     <main className="flex flex-col items-center justify-center min-h-dvh ">
       <div className="w-full md:w-3/5 lg:w-2/5 bg-gray-100 dark:bg-gray-900 p-5 rounded-lg">
         <div className="flex flex-col items-center text-center md:text-left">
           <Image src={logo} alt="Logo ZSZiOK" />
-          <h1 className="text-4xl font-bold">Rekolekcje ZSZiOK 2025</h1>
+          <h1 className="text-4xl font-bold">Rekolekcje ZSZiOK 2026</h1>
           <h2 className="text-2xl text-gray-400">
-            Weryfikator obecności na rekolekcjach 2025
+            Weryfikator obecności na rekolekcjach 2026
           </h2>
         </div>
         {userLocation === null && (
@@ -155,16 +153,17 @@ export default function Home() {
             {presenceStatus === "loading"
               ? "Wysyłanie..."
               : presenceStatus === "sent"
-              ? "Wysłano!"
-              : presenceStatus === "error"
-              ? "Spróbuj ponownie"
-              : "Potwierdź obecność"}
+                ? "Wysłano!"
+                : presenceStatus === "error"
+                  ? "Spróbuj ponownie"
+                  : "Potwierdź obecność"}
           </Button>
         </div>
       </div>
       <div className="w-full md:w-3/5 lg:w-2/5 bg-gray-100 dark:bg-gray-900 p-5 rounded-lg mt-5 text-center">
         <p className="text-gray-400 text-sm mt-3">
-          Jeśli masz problem z potwierdzeniem obecności, udaj się do zakrystii.{" "}
+          Jeśli masz problem z potwierdzeniem obecności, udaj się do
+          zakrystii.{" "}
         </p>
         <p className="text-gray-600 text-sm">
           Weryfikator stworzony na potrzeby ZSZiO do weryfikacji obecności
