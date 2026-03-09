@@ -66,6 +66,32 @@ require_once "classes.php";
 global $classes;
 
 
+function haversineDistanceMeters(float $lat1, float $lon1, float $lat2, float $lon2): float {
+    $earthRadius = 6371.0;
+
+    $lat1Rad = deg2rad($lat1);
+    $lon1Rad = deg2rad($lon1);
+    $lat2Rad = deg2rad($lat2);
+    $lon2Rad = deg2rad($lon2);
+
+    $dLat = $lat2Rad - $lat1Rad;
+    $dLon = $lon2Rad - $lon1Rad;
+
+    $a = sin($dLat / 2) ** 2 +
+         cos($lat1Rad) * cos($lat2Rad) * sin($dLon / 2) ** 2;
+
+    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+    $distanceKm = $earthRadius * $c;
+    $distanceMeters = $distanceKm * 1000; 
+
+    return $distanceMeters;
+}
+
+$CHURCH_LAT = 54.3356355;
+$CHURCH_LON = 18.1914201;
+
+
 ?>
 
 
@@ -151,12 +177,13 @@ global $classes;
                         <th>Długość</th>
                         <th>Uzyty kod</th>
                         <th>Mapy</th>
+                        <th>Odległość</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
                         if(count($students) == 0) {
-                            echo "<tr><td colspan='9'>Brak wyników</td></tr>";
+                            echo "<tr><td colspan='11'>Brak wyników</td></tr>";
                         }
                     ?>
                     <?php foreach($students as $key => $student) { ?>
@@ -171,6 +198,7 @@ global $classes;
                             <td><?php echo $student['longitude']; ?></td>
                             <td><?php echo $student['code']; ?></td>
                             <td><?php if (isset($student['latitude']) && isset($student['longitude'])) echo "<a href='https://www.google.com/maps/search/?api=1&query=".$student['latitude'].",".$student['longitude']."'>Mapy</a>"; ?></td>
+                            <td><?php if (isset($student['latitude']) && isset($student['longitude'])) echo "<p>".round(haversineDistanceMeters($student['latitude'], $student['longitude'], $CHURCH_LAT, $CHURCH_LON), 2)." metrów</p>"; ?></td>
                         </tr>
                     <?php } ?>
                 </tbody>
